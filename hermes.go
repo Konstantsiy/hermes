@@ -33,7 +33,7 @@ type TextDirection string
 var templateFuncs = template.FuncMap{
 	"url": func(s string) template.URL { return template.URL(s) },
 	"encode": func(s string) template.URL {
-		return template.URL(fmt.Sprintf("data:image/svg+xml;base64,%s", s))
+		return template.URL(fmt.Sprintf("data:image/png;base64,%s", s))
 	},
 	"safe": func(s string) template.HTML { return template.HTML(s) }, // Used for keeping comments in generated template
 }
