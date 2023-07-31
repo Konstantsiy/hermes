@@ -286,15 +286,11 @@ func (dt *Default) HTMLTemplate() string {
             <td class="email-masthead">
               <a class="email-masthead_name" href="{{.Hermes.Product.Link}}" target="_blank">
                 {{ if .Hermes.Product.Logo }}
-					{{ if .Hermes.Product.EncodedLogo }}
-                  		<img src="{{.Hermes.Product.Logo | encode }}" class="email-logo" />
-					{{ else }}
-						<img src="{{.Hermes.Product.Logo | url }}" class="email-logo" />
-					{{ end }}
+					{{ image .Hermes.Product.Logo .Hermes.Product.LogoFormat .Hermes.Product.IsLogoEncoded | safe }}
                 {{ else }}
                   {{ .Hermes.Product.Name }}
                 {{ end }}
-                </a>
+			  </a>
             </td>
           </tr>
 
