@@ -12,6 +12,12 @@ import (
 	"github.com/vanng822/go-premailer/premailer"
 )
 
+const (
+	FormatPNG = "png"
+	FormatSVG = "svg+xml"
+	FormatJPG = "jpg"
+)
+
 // Hermes is an instance of the hermes email generator
 type Hermes struct {
 	Theme              Theme
@@ -32,8 +38,18 @@ type TextDirection string
 
 var templateFuncs = template.FuncMap{
 	"url": func(s string) template.URL { return template.URL(s) },
-	"encode": func(s string) template.URL {
-		return template.URL(fmt.Sprintf("data:image/png;base64,%s", s))
+	"image": func(s, format string, isEncoded bool) string {
+		if isEncoded {
+			s = fmt.Sprintf("data:image/%s;base64,%s", format, s)
+		}
+
+		s = fmt.Sprintf(`<img src="%s" class="email-logo" />`, s)
+
+		if format == FormatSVG {
+			s = fmt.Sprintf("<svg>%s</svg>", s)
+		}
+
+		return s
 	},
 	"safe": func(s string) template.HTML { return template.HTML(s) }, // Used for keeping comments in generated template
 }
@@ -47,12 +63,13 @@ const TDRightToLeft TextDirection = "rtl"
 // Product represents your company product (brand)
 // Appears in header & footer of e-mails
 type Product struct {
-	Name        string
-	Link        string // e.g. https://matcornic.github.io
-	Logo        string // e.g. https://matcornic.github.io/img/logo.png
-	Copyright   string // Copyright © 2019 Hermes. All rights reserved.
-	TroubleText string // TroubleText is the sentence at the end of the email for users having trouble with the button (default to `If you’re having trouble with the button '{ACTION}', copy and paste the URL below into your web browser.`)
-	EncodedLogo bool
+	Name          string
+	Link          string // e.g. https://matcornic.github.io
+	Logo          string // e.g. https://matcornic.github.io/img/logo.png
+	Copyright     string // Copyright © 2019 Hermes. All rights reserved.
+	TroubleText   string // TroubleText is the sentence at the end of the email for users having trouble with the button (default to `If you’re having trouble with the button '{ACTION}', copy and paste the URL below into your web browser.`)
+	IsLogoEncoded bool
+	LogoFormat    string
 }
 
 // Email is the email containing a body
@@ -162,6 +179,7 @@ func setDefaultHermesValues(h *Hermes) error {
 	if h.TextDirection != TDLeftToRight && h.TextDirection != TDRightToLeft {
 		h.TextDirection = defaultTextDirection
 	}
+
 	return nil
 }
 

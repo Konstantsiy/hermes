@@ -1,8 +1,11 @@
 package hermes
 
 import (
+	"bytes"
+	"html/template"
 	"testing"
 
+	"github.com/Masterminds/sprig"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -514,4 +517,59 @@ func TestHermes_Default(t *testing.T) {
 	assert.Equal(t, email.Body.Greeting, "Hi")
 	assert.Equal(t, email.Body.Signature, "Yours truly")
 	assert.Empty(t, email.Body.Title)
+}
+
+func TestLogoEncodedFunctions(t *testing.T) {
+	var (
+		ex       = SimpleExample{&Default{}}
+		h, email = ex.getExample()
+		tmpl     = `{{ image .Hermes.Product.Logo .Hermes.Product.LogoFormat .Hermes.Product.IsLogoEncoded | safe }}`
+		tt       = []struct {
+			logo       string
+			isEncoded  bool
+			logoFormat string
+			expected   string
+		}{
+			{
+				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png",
+				logoFormat: FormatPNG,
+				isEncoded:  false,
+				expected:   `<img src="http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" />`,
+			},
+			{
+				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png",
+				logoFormat: FormatPNG,
+				isEncoded:  true,
+				expected:   `<img src="data:image/png;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" />`,
+			},
+			{
+				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.jpg",
+				logoFormat: FormatJPG,
+				isEncoded:  true,
+				expected:   `<img src="data:image/jpg;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.jpg" class="email-logo" />`,
+			},
+			{
+				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.svg",
+				logoFormat: FormatSVG,
+				isEncoded:  true,
+				expected:   `<svg><img src="data:image/svg+xml;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.svg" class="email-logo" /></svg>`,
+			},
+		}
+	)
+
+	for _, tc := range tt {
+		h.Product.Logo = tc.logo
+		h.Product.IsLogoEncoded = tc.isEncoded
+		h.Product.LogoFormat = tc.logoFormat
+
+		var test, err = template.New("hermes").Funcs(sprig.FuncMap()).Funcs(templateFuncs).Parse(tmpl)
+		assert.NoError(t, err)
+
+		var b bytes.Buffer
+		err = test.Execute(&b, Template{h, email})
+		assert.NoError(t, err)
+
+		assert.Equal(t, tc.expected, b.String())
+	}
+
 }
