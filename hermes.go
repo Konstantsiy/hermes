@@ -4,9 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"image"
-	"io"
-	"mime"
 
 	"github.com/Masterminds/sprig"
 	"github.com/imdario/mergo"
@@ -184,25 +181,6 @@ func setDefaultHermesValues(h *Hermes) error {
 	}
 
 	return nil
-}
-
-// Guess image format from gif/jpeg/png/webp
-func guessImageFormat(r io.Reader) (format string, err error) {
-	_, format, err = image.DecodeConfig(r)
-	return
-}
-
-// Guess image mime types from gif/jpeg/png/webp
-func guessImageMimeTypes(r io.Reader) string {
-	format, _ := guessImageFormat(r)
-	if format == "" {
-		return ""
-	}
-	return mime.TypeByExtension("." + format)
-}
-
-func (h *Hermes) determineLogoFormat() {
-
 }
 
 // GenerateHTML generates the email body from data to an HTML Reader
