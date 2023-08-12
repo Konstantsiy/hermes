@@ -45,10 +45,6 @@ var templateFuncs = template.FuncMap{
 
 		s = fmt.Sprintf(`<img src="%s" class="email-logo" />`, s)
 
-		if format == FormatSVG {
-			s = fmt.Sprintf("<svg>%s</svg>", s)
-		}
-
 		return s
 	},
 	"safe": func(s string) template.HTML { return template.HTML(s) }, // Used for keeping comments in generated template
