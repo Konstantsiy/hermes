@@ -43,7 +43,7 @@ var templateFuncs = template.FuncMap{
 			s = fmt.Sprintf("data:image/%s;base64,%s", format, s)
 		}
 
-		s = fmt.Sprintf(`<img src="%s" class="email-logo" />`, s)
+		s = fmt.Sprintf(`<img src="%s" alt="Logo" title="Logo" style="display:block; margin-left: auto; margin-right: auto" class="email-logo" />`, s)
 
 		return s
 	},
