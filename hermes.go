@@ -38,12 +38,12 @@ type TextDirection string
 
 var templateFuncs = template.FuncMap{
 	"url": func(s string) template.URL { return template.URL(s) },
-	"image": func(s, format string, isEncoded bool) string {
+	"image": func(s, format string, isEncoded bool, project string) string {
 		if isEncoded {
 			s = fmt.Sprintf("data:image/%s;base64,%s", format, s)
 		}
 
-		s = fmt.Sprintf(`<img src="%s" alt="Logo" title="Logo" style="display:block; margin-left: auto; margin-right: auto" class="email-logo" />`, s)
+		s = fmt.Sprintf(`<img src="%s" class="email-logo" alt="%s" />`, s, project)
 
 		return s
 	},

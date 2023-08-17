@@ -523,7 +523,7 @@ func TestLogoEncodedFunctions(t *testing.T) {
 	var (
 		ex       = SimpleExample{&Default{}}
 		h, email = ex.getExample()
-		tmpl     = `{{ image .Hermes.Product.Logo .Hermes.Product.LogoFormat .Hermes.Product.IsLogoEncoded | safe }}`
+		tmpl     = `{{ image .Hermes.Product.Logo .Hermes.Product.LogoFormat .Hermes.Product.IsLogoEncoded .Hermes.Product.Name | safe }}`
 		tt       = []struct {
 			logo       string
 			isEncoded  bool
@@ -534,25 +534,25 @@ func TestLogoEncodedFunctions(t *testing.T) {
 				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png",
 				logoFormat: FormatPNG,
 				isEncoded:  false,
-				expected:   `<img src="http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" />`,
+				expected:   `<img src="http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" alt="HermesName" />`,
 			},
 			{
 				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png",
 				logoFormat: FormatPNG,
 				isEncoded:  true,
-				expected:   `<img src="data:image/png;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" />`,
+				expected:   `<img src="data:image/png;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.png" class="email-logo" alt="HermesName" />`,
 			},
 			{
 				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.jpg",
 				logoFormat: FormatJPG,
 				isEncoded:  true,
-				expected:   `<img src="data:image/jpg;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.jpg" class="email-logo" />`,
+				expected:   `<img src="data:image/jpg;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.jpg" class="email-logo" alt="HermesName" />`,
 			},
 			{
 				logo:       "http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.svg",
 				logoFormat: FormatSVG,
 				isEncoded:  true,
-				expected:   `<svg><img src="data:image/svg+xml;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.svg" class="email-logo" /></svg>`,
+				expected:   `<img src="data:image/svg+xml;base64,http://www.duchess-france.org/wp-content/uploads/2016/01/gopher.svg" class="email-logo" alt="HermesName" />`,
 			},
 		}
 	)
